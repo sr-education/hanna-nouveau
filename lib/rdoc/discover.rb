@@ -1,1 +1,1 @@
-require 'hanna'
+require 'hanna-nouveau'

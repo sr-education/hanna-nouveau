@@ -11,20 +11,11 @@
 #   Tony Strauss (http://github.com/DesigningPatterns)
 #   Michael Granger <ged@FaerieMUD.org>, who had maintained the original RDoc template
 
-module Hanna
-  VERSION = '0.1.13'
-end
-
 require 'pathname'
 require 'haml'
 require 'sass'
 require 'rdoc/rdoc'
 require 'rdoc/generator'
-
-module RDoc #:nodoc:
-  module Generator #:nodoc:
-  end
-end
 
 class RDoc::Generator::Hanna 
   STYLE            = 'styles.sass'
@@ -59,7 +50,7 @@ class RDoc::Generator::Hanna
   def initialize( options )
     @options = options
 
-    @templatedir = Pathname.new File.expand_path('../hanna/template_files', __FILE__)
+    @templatedir = Pathname.new File.expand_path('../hanna-nouveau/template_files', __FILE__)
 
     @files      = nil
     @classes    = nil
