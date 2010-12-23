@@ -1,4 +1,6 @@
-= Hanna — a better RDoc template
+= Hanna Nouveau — a better RDoc template, now for RDoc 2.5 and 3.0.
+
+Based on the original Hanna by Mislav.
 
 Hanna is an RDoc generator that scales. It's implemented in Haml, making the
 sources clean and readable. It's built with simplicity, beauty and ease of

@@ -1,43 +1,55 @@
-desc "builds the gem"
-task :gem do
-  system %(gem build hanna.gemspec)
+require 'rubygems'
+require 'bundler'
+begin
+  Bundler.setup(:default, :development)
+rescue Bundler::BundlerError => e
+  $stderr.puts e.message
+  $stderr.puts "Run `bundle install` to install missing gems"
+  exit e.status_code
+end
+require 'rake'
+
+require 'jeweler'
+Jeweler::Tasks.new do |gem|
+  # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
+  gem.name = "hanna-nouveau"
+  gem.homepage = "http://github.com/erikh/hanna-nouveau"
+  gem.license = "MIT"
+  gem.summary = %Q{A rework of the Hanna generator for RDoc 2.5 and 3.0}
+  gem.description = %Q{}
+  gem.email = "erik@hollensbe.org"
+  gem.authors = ["Erik Hollensbe"]
+  # Include your dependencies below. Runtime dependencies are required when using your gem,
+  # and development dependencies are only needed for development (ie running rake tasks, tests, etc)
+  gem.add_runtime_dependency 'haml'
+  gem.add_runtime_dependency 'rdoc'
+  gem.add_development_dependency 'jeweler'
+  gem.add_development_dependency 'rake'
+end
+Jeweler::RubygemsDotOrgTasks.new
+
+require 'rake/testtask'
+Rake::TestTask.new(:test) do |test|
+  test.libs << 'lib' << 'test'
+  test.pattern = 'test/**/test_*.rb'
+  test.verbose = true
 end
 
-# probably should replace this
-task :install => [:gem] do
-  sh "gem install hanna*.gem"
+require 'rcov/rcovtask'
+Rcov::RcovTask.new do |test|
+  test.libs << 'test'
+  test.pattern = 'test/**/test_*.rb'
+  test.verbose = true
 end
 
-# We do the following so that RDoc will pick up our plugin now, and also in
-# any subshells.
-path = File.expand_path('../lib', __FILE__)
-$LOAD_PATH.unshift path
-ENV['RUBYLIB'] = begin
-  libs = ENV['RUBYLIB'] || ''
-  libs = libs.split(File::PATH_SEPARATOR)
-  libs << path
-  libs.join(File::PATH_SEPARATOR)
-end
+task :default => :test
 
-gemspec = eval(File.read('hanna.gemspec'))
+require 'rake/rdoctask'
+Rake::RDocTask.new do |rdoc|
+  version = File.exist?('VERSION') ? File.read('VERSION') : ""
 
-require 'rdoc/task'
-RDoc::Task.new do |t|
-  t.rdoc_dir = 'doc'
-  t.options.push('-f', 'hanna')
-  t.main = Dir['README*'].first
-  t.rdoc_files.include(*gemspec.files)
-  t.rdoc_files.exclude('Rakefile')
-end
-
-desc "Generate then open docs"
-task :docs => :rerdoc do
-  case RUBY_PLATFORM
-  when /mswin|mingw/
-    sh "start", "doc/index.html"
-  when /darwin/
-    sh "open", "doc/index.html"
-  else
-    sh "firefox", "doc/index.html"
-  end
+  rdoc.rdoc_dir = 'rdoc'
+  rdoc.title = "hanna-nouveau #{version}"
+  rdoc.rdoc_files.include('README*')
+  rdoc.rdoc_files.include('lib/**/*.rb')
 end
