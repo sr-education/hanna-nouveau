@@ -43,8 +43,9 @@ gems. Remember, if you wish to have all your gems be formatted in hanna:
 
     gem rdoc --all --overwrite
 
-The first time. To easily browse your newly created documentation, use `gem
-server`.
+The first time. To easily browse your newly created documentation, use:
+
+    gem server
 
 == Rake task
 
