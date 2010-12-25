@@ -9,7 +9,7 @@ wiki}[http://github.com/mislav/hanna/wikis/home].)
 
 Hanna gem is available from http://rubygems.org:
 
-    gem install hanna
+    gem install hanna-nouveau
 
 The template was created by {Mislav}[http://mislav.caboo.se/] and since then
 has seen contributions from:
@@ -18,7 +18,7 @@ has seen contributions from:
    the early start and made tons of fixes and enhancements to the template;
 2. {Hongli Lai}[http://blog.phusion.nl/] with the search filter for methods.
 3. {Erik Hollensbe}[http://github.com/erikh] a serious refactoring and up to
-   date with RDoc 2.5.x.
+   date with RDoc 2.5.x and 3.x.
 4. {James Tucker}[http://github.com/raggi] minor cleanups for Erik.
 
 == Usage
@@ -46,7 +46,7 @@ gems.
 For repeated generation of API docs, it's better to set up a Rake task. Simply
 add the hanna format argument to your RDoc::Task options:
 
-    require 'hanna'
+    require 'hanna-nouveau'
     require 'rdoc/task'
     RDoc::Task.new do |rdoc|
       rdoc.options.push '-f', 'hanna'
@@ -58,7 +58,7 @@ Tip: you can do this in the Rakefile of your Rails project before running
 Here is an example of a task for the {rdbi
 library}[http://github.com/rdbi/rdbi/tree/master/Rakefile]:
 
-    require 'hanna'
+    require 'hanna-nouveau'
     require 'rdoc/task'
     RDoc::Task.new do |rdoc|
       version = File.exist?('VERSION') ? File.read('VERSION') : ""
@@ -90,19 +90,3 @@ To regenerate documentation for all gems:
     gem rdoc --all --overwrite
 
 To easily browse your newly created documentation, use `gem server`.
-
-== You can help
-
-Don't like something? Think you can design better? (You probably can.)
-
-I think of Hanna as the first RDoc template that's actually _maintainable_.
-First thing I have done is converted the original HTML template to Haml and
-Sass, cleaning up and removing the (ridiculous amount of) duplication. Also,
-the template fragments are now in _separate files_.
-
-Ultimately, I'd like to lose the frameset. Currently that is far from possible
-because the whole RDoc HTML Generator is built for frames. Still, that is my
-goal.
-
-This is git. Fork it, hack away, tell me about it!
-
