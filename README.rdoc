@@ -18,7 +18,7 @@ has seen contributions from:
    the early start and made tons of fixes and enhancements to the template;
 2. {Hongli Lai}[http://blog.phusion.nl/] with the search filter for methods.
 3. {Erik Hollensbe}[http://github.com/erikh] a serious refactoring and up to
-   date with RDoc 2.5.x and 3.x.
+   date with RDoc 2.5.x and 3.x, now named 'hanna-nouveau'.
 4. {James Tucker}[http://github.com/raggi] minor cleanups for Erik.
 
 == Usage
@@ -39,14 +39,19 @@ RubyGems use Hanna for all rdoc generation:
     rdoc: -f hanna
 
 This will make RubyGems use Hanna when generating documentation for installed
-gems.
+gems. Remember, if you wish to have all your gems be formatted in hanna:
+
+    gem rdoc --all --overwrite
+
+The first time. To easily browse your newly created documentation, use `gem
+server`.
 
 == Rake task
 
 For repeated generation of API docs, it's better to set up a Rake task. Simply
 add the hanna format argument to your RDoc::Task options:
 
-    require 'hanna-nouveau'
+    gem 'rdoc'
     require 'rdoc/task'
     RDoc::Task.new do |rdoc|
       rdoc.options.push '-f', 'hanna'
@@ -58,7 +63,7 @@ Tip: you can do this in the Rakefile of your Rails project before running
 Here is an example of a task for the {rdbi
 library}[http://github.com/rdbi/rdbi/tree/master/Rakefile]:
 
-    require 'hanna-nouveau'
+    gem 'rdoc'
     require 'rdoc/task'
     RDoc::Task.new do |rdoc|
       version = File.exist?('VERSION') ? File.read('VERSION') : ""
@@ -70,23 +75,3 @@ library}[http://github.com/rdbi/rdbi/tree/master/Rakefile]:
       rdoc.rdoc_files.include('README*')
       rdoc.rdoc_files.include('lib/**/*.rb')
     end
-
-== Generating documentation for installed gems
-
-The gem comes with a RubyGems plugin that overrides the gem default arguments
-to RDoc to use Hanna.
-
-To regenerate documentation for a specific gem, first configure RubyGems to
-use Hanna, by adding the following to your .gemrc:
-
-    rdoc: -f  hanna
-
-Now to regenerate documentation for an already installed gem:
-
-    gem rdoc mygem --overwrite
-
-To regenerate documentation for all gems:
-
-    gem rdoc --all --overwrite
-
-To easily browse your newly created documentation, use `gem server`.
