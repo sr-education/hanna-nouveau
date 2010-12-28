@@ -40,6 +40,8 @@ class RDoc::Generator::Hanna
   METHOD_INDEX_OUT = 'fr_method_index.html'
   STYLE_OUT        = File.join('css', 'style.css')
 
+  DESCRIPTION = 'a HAML-based HTML generator that scales'
+
   # EPIC CUT AND PASTE TIEM NAO -- GG
   RDoc::RDoc.add_generator( self )
 
