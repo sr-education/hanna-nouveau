@@ -55,6 +55,9 @@ add the hanna format argument to your RDoc::Task options:
     gem 'rdoc'
     require 'rdoc/task'
     RDoc::Task.new do |rdoc|
+      # this only works with RDoc 3.1 or greater
+      rdoc.generator = 'hanna'
+      # this is what you use pre RDoc 3.1:
       rdoc.options.push '-f', 'hanna'
     end
 
@@ -69,7 +72,7 @@ library}[http://github.com/rdbi/rdbi/tree/master/Rakefile]:
     RDoc::Task.new do |rdoc|
       version = File.exist?('VERSION') ? File.read('VERSION') : ""
 
-      rdoc.options.push '-f', 'hanna'
+      rdoc.generator = 'hanna'
       rdoc.main = 'README.rdoc'
       rdoc.rdoc_dir = 'rdoc'
       rdoc.title = "RDBI #{version} Documentation"
