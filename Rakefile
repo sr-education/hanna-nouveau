@@ -15,10 +15,10 @@ Jeweler::Tasks.new do |gem|
   gem.name = "hanna-nouveau"
   gem.homepage = "http://github.com/erikh/hanna-nouveau"
   gem.license = "MIT"
-  gem.summary = %Q{A rework of the Hanna generator for RDoc 2.5 and 3.0}
+  gem.summary = %Q{A rework of the Hanna generator for RDoc 2.5 and 3.x}
   gem.description = %Q{}
   gem.email = "erik@hollensbe.org"
-  gem.authors = ["Erik Hollensbe"]
+  gem.authors = ["Erik Hollensbe", "James Tucker", "Mislav Marohnić"]
   # Include your dependencies below. Runtime dependencies are required when using your gem,
   # and development dependencies are only needed for development (ie running rake tasks, tests, etc)
   gem.add_runtime_dependency 'haml'
