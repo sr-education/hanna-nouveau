@@ -173,9 +173,9 @@ class RDoc::Generator::Hanna
           # FIXME linkify
           :classlist => '<ol>' + klass.classes_and_modules.inject('') { |x,y| x << '<li>' + y.name + '</li>' } + '</ol>',
           :constants => klass.constants,
-          :aliases   => klass.method_list.select { |x| x.is_alias_for },
-          :attributes => klass.attributes,
-          :method_list => klass.method_list.select { |x| !x.is_alias_for }
+          :aliases   => klass.method_list.select { |x| x.is_alias_for }.sort,
+          :attributes => klass.attributes.sort,
+          :method_list => klass.method_list.select { |x| !x.is_alias_for }.sort
         }
       } 
 
