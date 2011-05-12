@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{hanna-nouveau}
-  s.version = "0.2.2"
+  s.version = "0.2.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = ["Erik Hollensbe", "James Tucker", "Mislav Marohni\304\207"]
-  s.date = %q{2010-12-28}
+  s.authors = ["Erik Hollensbe", "James Tucker", "Mislav Marohnic"]
+  s.date = %q{2011-05-12}
   s.description = %q{}
   s.email = %q{erik@hollensbe.org}
   s.extra_rdoc_files = [
@@ -41,11 +41,10 @@ Gem::Specification.new do |s|
   s.homepage = %q{http://github.com/erikh/hanna-nouveau}
   s.licenses = ["MIT"]
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.3.7}
+  s.rubygems_version = %q{1.7.2}
   s.summary = %q{A rework of the Hanna generator for RDoc 2.5 and 3.x}
 
   if s.respond_to? :specification_version then
-    current_version = Gem::Specification::CURRENT_SPECIFICATION_VERSION
     s.specification_version = 3
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
@@ -53,7 +52,7 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<jeweler>, ["~> 1.5.1"])
       s.add_development_dependency(%q<rcov>, [">= 0"])
       s.add_development_dependency(%q<rdoc>, ["~> 3.1"])
-      s.add_runtime_dependency(%q<haml>, [">= 0"])
+      s.add_runtime_dependency(%q<haml>, ["= 3.0.25"])
       s.add_runtime_dependency(%q<rdoc>, [">= 0"])
       s.add_development_dependency(%q<jeweler>, [">= 0"])
       s.add_development_dependency(%q<rake>, [">= 0"])
@@ -62,7 +61,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<jeweler>, ["~> 1.5.1"])
       s.add_dependency(%q<rcov>, [">= 0"])
       s.add_dependency(%q<rdoc>, ["~> 3.1"])
-      s.add_dependency(%q<haml>, [">= 0"])
+      s.add_dependency(%q<haml>, ["= 3.0.25"])
       s.add_dependency(%q<rdoc>, [">= 0"])
       s.add_dependency(%q<jeweler>, [">= 0"])
       s.add_dependency(%q<rake>, [">= 0"])
@@ -72,7 +71,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<jeweler>, ["~> 1.5.1"])
     s.add_dependency(%q<rcov>, [">= 0"])
     s.add_dependency(%q<rdoc>, ["~> 3.1"])
-    s.add_dependency(%q<haml>, [">= 0"])
+    s.add_dependency(%q<haml>, ["= 3.0.25"])
     s.add_dependency(%q<rdoc>, [">= 0"])
     s.add_dependency(%q<jeweler>, [">= 0"])
     s.add_dependency(%q<rake>, [">= 0"])
