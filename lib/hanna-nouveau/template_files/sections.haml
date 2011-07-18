@@ -12,7 +12,7 @@
       %h2 
         %a{ :name =>section.aref }= section.title
         - if section.comment
-          .section-comment= section.comment.gsub(/[ \s#]+/, ' ')
+          .section-comment= section.description
         
     - unless constants.empty?
       #constants-list
