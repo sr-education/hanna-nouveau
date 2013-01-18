@@ -17,7 +17,7 @@ require 'sass'
 require 'rdoc/rdoc'
 require 'rdoc/generator'
 
-class RDoc::Generator::Hanna 
+class RDoc::Generator::Bootstrap 
   STYLE            = 'styles.sass'
   LAYOUT           = 'layout.haml'
 
@@ -52,7 +52,7 @@ class RDoc::Generator::Hanna
   def initialize( options )
     @options = options
 
-    @templatedir = Pathname.new File.expand_path('../hanna-nouveau/template_files', __FILE__)
+    @templatedir = Pathname.new File.expand_path('../hanna-bootstrap/template_files', __FILE__)
 
     @files      = nil
     @classes    = nil
