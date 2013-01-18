@@ -1,12 +1,11 @@
-# = A better RDoc HTML template
+# = Twitter Boostrap theme for RDoc
 #
 # Code rewritten by:
-#   Erik Hollensbe <erik@hollensbe.org>
-#
-# RubyGems integration properly done by:
-#   James Tucker (aka raggi)
+#   Atsushi Nagase <a@ngs.io>
 #
 # Original Authors:
+#   James Tucker (aka raggi)
+#   Erik Hollensbe <erik@hollensbe.org>
 #   Mislav Marohnić <mislav.marohnic@gmail.com>
 #   Tony Strauss (http://github.com/DesigningPatterns)
 #   Michael Granger <ged@FaerieMUD.org>, who had maintained the original RDoc template
@@ -16,12 +15,15 @@ require 'haml'
 require 'sass'
 require 'rdoc/rdoc'
 require 'rdoc/generator'
+require 'coffee-script'
+require 'json'
 
-class RDoc::Generator::Bootstrap 
-  STYLE            = 'styles.sass'
+class RDoc::Generator::Bootstrap
+
+  VERSION = '0.0.1'
+
   LAYOUT           = 'layout.haml'
 
-  INDEX_PAGE       = 'index.haml'
   CLASS_PAGE       = 'page.haml'
   METHOD_LIST_PAGE = 'method_list.haml'
   FILE_PAGE        = CLASS_PAGE
@@ -35,12 +37,11 @@ class RDoc::Generator::Bootstrap
   FILE_DIR         = 'files'
 
   INDEX_OUT        = 'index.html'
-  FILE_INDEX_OUT   = 'fr_file_index.html'
-  CLASS_INDEX_OUT  = 'fr_class_index.html'
-  METHOD_INDEX_OUT = 'fr_method_index.html'
-  STYLE_OUT        = File.join('css', 'style.css')
+  FILE_INDEX_OUT   = File.join 'files',   'index.html'
+  CLASS_INDEX_OUT  = File.join 'classes', 'index.html'
+  METHOD_INDEX_OUT = File.join 'method',  'index.html'
 
-  DESCRIPTION = 'a HAML-based HTML generator that scales'
+  DESCRIPTION = 'Twitter Bootstrap theme for RDoc'
 
   # EPIC CUT AND PASTE TIEM NAO -- GG
   RDoc::RDoc.add_generator( self )
@@ -62,6 +63,29 @@ class RDoc::Generator::Bootstrap
     @basedir = Pathname.pwd.expand_path
   end
 
+  def default_values( path )
+    {
+      stylesheets: [
+        outpath(File.join('css', 'bootstrap.min.css'  ), path),
+        outpath(File.join('css', 'application.css'    ), path)
+      ],
+      javascripts: [
+        outpath(File.join('js',  'jquery.js'          ), path),
+        outpath(File.join('js',  'bootstrap.min.js'   ), path),
+        outpath(File.join('js',  'index.js'           ), path),
+        outpath(File.join('js',  'application.js'     ), path)
+      ],
+      mainpage:   outpath('', path),
+      files:      @files,
+      classes:    @classes,
+      methods:    @methods,
+      attributes: @attributes,
+      options:    @options,
+      path:       path
+    }
+
+  end
+
   def generate( top_levels )
     @outputdir = Pathname.new( @options.op_dir ).expand_path( @basedir )
 
@@ -72,9 +96,10 @@ class RDoc::Generator::Bootstrap
 
     # Now actually write the output
     write_static_files
-    generate_indexes
+    
     generate_class_files
     generate_file_files
+    generate_indexes
 
   rescue StandardError => err
     p [ err.class.name, err.message, err.backtrace.join("\n  ") ]
@@ -83,72 +108,104 @@ class RDoc::Generator::Bootstrap
 
   def write_static_files
     css_dir = outjoin('css')
+    js_dir  = outjoin('js')
+    img_dir = outjoin('img')
 
-    unless File.directory?(css_dir)
-      FileUtils.mkdir css_dir
+    [css_dir, js_dir, img_dir].each { |dir|
+      FileUtils.mkdir dir unless File.directory?(dir)
+    }
+
+    File.open(File.join(css_dir, 'application.css'), 'w') { |f|
+      f << Sass::Engine.new(File.read(templjoin('application.sass'))).to_css
+    }
+
+    File.open(File.join(js_dir, 'application.js'), 'w') { |f|
+      f << CoffeeScript.compile(File.read(templjoin('application.coffee')))
+    }
+
+    File.open(File.join(js_dir, 'index.js'), 'w') { |f|
+      f << build_javascript_search_index(@methods + @attributes)
+    }
+
+    FileUtils.cp %w{
+      bootstrap.min.js
+      jquery.js
+    }.map{|f| templjoin f }, js_dir
+
+    FileUtils.cp %w{
+      glyphicons-halflings-white.png
+      glyphicons-halflings.png
+    }.map{|f| templjoin f }, img_dir
+
+    FileUtils.cp %w{
+      bootstrap.min.css
+    }.map{|f| templjoin f }, css_dir
+
+  end
+
+  def generate_indexes
+    generate_index(FILE_INDEX_OUT,   FILE_INDEX,   'File')
+    generate_index(CLASS_INDEX_OUT,  CLASS_INDEX,  'Class')
+    generate_index(METHOD_INDEX_OUT, METHOD_INDEX, 'Method')
+  end
+
+  def generate_index(outfile, templfile, index_name)
+    path = Pathname.new(outfile)
+    dir = path.dirname
+    unless File.directory? dir
+      FileUtils.mkdir_p dir
     end
 
-    File.open(File.join(css_dir, 'style.css'), 'w') { |f| f << Sass::Engine.new(File.read(templjoin(STYLE))).to_css }
-  end
-
-  # FIXME refactor
-  def generate_indexes
-    @main_page_uri = @files.find { |f| f.name == @options.main_page }.path rescue ''
-    File.open(outjoin(INDEX_OUT), 'w') { |f| f << haml_file(templjoin(INDEX_PAGE)).to_html(binding) }
-
-    generate_index(FILE_INDEX_OUT,   FILE_INDEX,   'File',   { :files => @files})
-    generate_index(CLASS_INDEX_OUT,  CLASS_INDEX,  'Class',  { :classes => @classes })
-    generate_index(METHOD_INDEX_OUT, METHOD_INDEX, 'Method', { :methods => @methods, :attributes => @attributes })
-  end
-
-  def generate_index(outfile, templfile, index_name, values)
-    values.merge!({
-      :stylesheet => STYLE_OUT,
+    values = default_values(path).merge({
       :list_title => "#{index_name} Index"
     })
 
     index = haml_file(templjoin(templfile))
 
-    File.open(outjoin(outfile), 'w') do |f| 
+    File.open(path, 'w') do |f| 
       f << with_layout(values) do
-             index.to_html(binding, values)
-           end
+        index.to_html(binding, values)
+      end
     end
   end
 
   def generate_file_files
-    file_page = haml_file(templjoin(FILE_PAGE))
-    method_list_page = haml_file(templjoin(METHOD_LIST_PAGE))
 
     # FIXME non-Ruby files
     @files.each do |file|
-      path = Pathname.new(file.path)
-      stylesheet = Pathname.new(STYLE_OUT).relative_path_from(path.dirname)
-      
-      values = { 
-        :file => file, 
-        :entry => file,
-        :stylesheet => stylesheet,
-        :classmod => nil, 
-        :title => file.base_name, 
-        :list_title => nil,
-        :description => file.description
-      } 
-
-      result = with_layout(values) do 
-        file_page.to_html(binding, :values => values) do 
-          method_list_page.to_html(binding, values) 
-        end
-      end
-
-      # FIXME XXX sanity check
-      dir = path.dirname
-      unless File.directory? dir
-        FileUtils.mkdir_p dir
-      end
-
-      File.open(outjoin(file.path), 'w') { |f| f << result }
+      generate_file_file(file)
+      generate_file_file(file, 'index.html') if @options.main_page == file.name
     end
+  end
+
+  def generate_file_file(file, path = nil)
+    file_page = haml_file(templjoin(FILE_PAGE))
+    method_list_page = haml_file(templjoin(METHOD_LIST_PAGE))
+
+    path = Pathname.new(path || file.path)
+    values = default_values(path).merge({ 
+      :file => file, 
+      :entry => file,
+      :classmod => nil, 
+      :title => file.base_name, 
+      :list_title => nil,
+      :description => file.description
+    })
+
+    result = with_layout(values) do 
+      file_page.to_html(binding, :values => values) do 
+        method_list_page.to_html(binding, values) 
+      end
+    end
+
+    # FIXME XXX sanity check
+    dir = path.dirname
+    unless File.directory? dir
+      FileUtils.mkdir_p dir
+    end
+
+    File.open(outjoin(path.to_path), 'w') { |f| f << result }
+
   end
 
   def generate_class_files
@@ -159,7 +216,6 @@ class RDoc::Generator::Bootstrap
 
     @classes.each do |klass|
       outfile = classfile(klass)
-      stylesheet = Pathname.new(STYLE_OUT).relative_path_from(outfile.dirname)
       sections = {}
       klass.each_section do |section, constants, attributes|
         method_types = []
@@ -174,16 +230,17 @@ class RDoc::Generator::Bootstrap
         sections[section] = {:constants=>constants, :attributes=>attributes, :method_types=>method_types, :alias_types=>alias_types}
       end
 
-      values = { 
+      path = Pathname.new(klass.path)
+
+      values = default_values(path).merge({ 
         :file => klass.path, 
         :entry => klass,
-        :stylesheet => stylesheet,
         :classmod => klass.type,
         :title => klass.full_name,
         :list_title => nil,
         :description => klass.description,
         :sections => sections
-      } 
+      })
 
       result = with_layout(values) do 
         h = {:values => values}
@@ -217,16 +274,6 @@ class RDoc::Generator::Bootstrap
     end
   end
 
-  # probably should bring in nokogiri/libxml2 to do this right.. not sure if
-  # it's worth it.
-  def frame_link(content)
-    content.gsub(%r!<a href="http://[^>]*>!).each do |tag|
-      a_tag, rest = tag.split(' ', 2)
-      rest.gsub!(/target="[^"]*"/, '')
-      a_tag + ' target="_top" ' + rest
-    end
-  end
-
   def class_dir
     CLASS_DIR
   end
@@ -240,7 +287,7 @@ class RDoc::Generator::Bootstrap
   end
 
   # XXX may my sins be not visited upon my sons.
-  def render_class_tree(entries, parent=nil)
+  def render_class_tree(entries, from_path, parent=nil)
     namespaces = { }
 
     entries.sort.inject('') do |out, klass|
@@ -252,17 +299,14 @@ class RDoc::Generator::Bootstrap
         end
 
         if klass.document_self
-          out << '<li>'
-          out << link_to(text, classfile(klass))
+          link = Pathname.new(classfile(klass)).relative_path_from(from_path.dirname)
+          out << "<li>#{ link_to(text, link) }</li>"
         end
 
         subentries = @classes.select { |x| x.full_name[/^#{klass.full_name}::/] }
         subentries.each { |x| namespaces[x.full_name] = true }
-        out << "\n<ol>" + render_class_tree(subentries, klass) + "\n</ol>"
+        out << render_class_tree(subentries, from_path, klass)
 
-        if klass.document_self
-          out << '</li>'
-        end
       end
 
       out
@@ -270,25 +314,23 @@ class RDoc::Generator::Bootstrap
   end
     
   def build_javascript_search_index(entries)
-    result = "var search_index = [\n"
-    entries.each do |entry|
+    'var searchIndex = ' + (entries.map { |entry|
       method_name = entry.name
       module_name = entry.parent_name
-      # FIXME link
-      html = link_to_method(entry, [classfile(entry.parent), (entry.aref rescue "method-#{entry.html_name}")].join('#'))
-      result << "  { method: '#{method_name.downcase}', " +
-                      "module: '#{module_name.downcase}', " +
-                      "html: '#{html}' },\n"
-    end
-    result << "]"
-    result
+      link = [classfile(entry.parent), (entry.aref rescue "method-#{entry.html_name}")].join('#')
+      {
+        'method' => method_name,
+        'module' => module_name,
+        'link'   => link
+      }
+    }.to_json)
   end
 
-  def link_to(text, url = nil, classname = nil)
+  def link_to(text, url = nil, classname = nil, base = nil)
     class_attr = classname ? ' class="%s"' % classname : ''
 
     if url
-        %[<a target="docwin" href="#{url}"#{class_attr}>#{text}</a>]
+        %[<a href="#{base}#{url}"#{class_attr}>#{text}</a>]
     elsif classname
         %[<span#{class_attr}>#{text}</span>]
     else
@@ -300,12 +342,16 @@ class RDoc::Generator::Bootstrap
   def link_to_method(entry, url = nil, classname = nil)
     method_name = entry.pretty_name rescue entry.name
     module_name = entry.parent_name rescue entry.name
-    link_to %Q(<span class="method_name">#{h method_name}</span> <span class="module_name">(#{h module_name})</span>), url, classname
+    link_to %Q(<li><strong>#{h method_name}</strong><small>#{h module_name}</small></li>), url, classname
   end
 
   def classfile(klass)
     # FIXME sloooooooow
     Pathname.new(File.join(CLASS_DIR, klass.full_name.split('::')) + '.html')
+  end
+
+  def outpath( path, from_path )
+    Pathname.new(path).relative_path_from(from_path.dirname)
   end
 
   def outjoin(name)
@@ -317,6 +363,6 @@ class RDoc::Generator::Bootstrap
   end
 
   def haml_file(file)
-    Haml::Engine.new(File.read(file), :format => :html4)
+    Haml::Engine.new(File.read(file))
   end
 end 

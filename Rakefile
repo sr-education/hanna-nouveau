@@ -12,6 +12,6 @@ RDoc::Task.new do |rdoc|
   rdoc.generator  = 'bootstrap'
   rdoc.main       = "README.rdoc"
   rdoc.rdoc_dir   = 'doc'
-  rdoc.title      = 'Twitter Boostrap theme for RDoc'
+  rdoc.title      = 'hanna-bootstrap'
 
 end

@@ -6,7 +6,15 @@ PATH
 GEM
   remote: http://rubygems.org/
   specs:
+    coffee-script (2.2.0)
+      coffee-script-source
+      execjs
+    coffee-script-source (1.4.0)
+    execjs (1.4.0)
+      multi_json (~> 1.0)
     haml (3.1.7)
+    json (1.7.6)
+    multi_json (1.5.0)
     rake (10.0.3)
     sass (3.2.5)
 
@@ -15,7 +23,9 @@ PLATFORMS
 
 DEPENDENCIES
   bundler
+  coffee-script
   haml
   hanna-bootstrap!
+  json
   rake
   sass
