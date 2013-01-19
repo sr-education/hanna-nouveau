@@ -4,6 +4,7 @@
 - if entry.requires or sections or entry.includes
   #context
     - unless entry.requires.empty?
+      - no_content = false
       %section#requires
         %h2 Required files
         %ol
@@ -11,6 +12,7 @@
             %li= req.name
 
     - if sections && (sections.length > 1 || sections.first.title.to_s != '')
+      - no_content = false
       %section#contents
         %h2 Contents
         %ol
@@ -18,6 +20,7 @@
             %li= link_to section.title, "##{section.aref}"
 
     - unless entry.includes.empty?
+      - no_content = false
       %section#includes
         %h2 Included modules
         %ol
@@ -26,4 +29,3 @@
               %li= inc.name
             - else
               %li= link_to inc.name, entry.aref_to(mod.path)
-

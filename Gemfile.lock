@@ -3,6 +3,7 @@ PATH
   specs:
     hanna-bootstrap (0.0.2)
       bundler
+      coderay
       coffee-script
       haml
       json
@@ -12,6 +13,7 @@ PATH
 GEM
   remote: http://rubygems.org/
   specs:
+    coderay (1.0.8)
     coffee-script (2.2.0)
       coffee-script-source
       execjs

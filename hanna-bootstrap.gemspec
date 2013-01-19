@@ -19,6 +19,7 @@ Gem::Specification.new do |s|
   s.licenses = ["MIT"]
 
   s.add_dependency 'bundler'
+  s.add_dependency 'coderay'
   s.add_dependency 'coffee-script'
   s.add_dependency 'haml'
   s.add_dependency 'json'

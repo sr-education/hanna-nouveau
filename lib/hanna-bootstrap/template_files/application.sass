@@ -1,8 +1,4 @@
-body
-  background: #eee
-
 #main
-  background: #fff
   @media (min-width: 980px)
     padding: 80px 0
   padding: 0 0 50px 0
@@ -13,9 +9,13 @@ body
       .parent
         opacity: 0.5
 
+
+.navbar
+  .dropdown-menu
+    max-height: 400px
+    overflow: auto
+
 #search-results
-  max-height: 400px
-  overflow: auto
   li
     strong, span
       display: block
@@ -30,3 +30,39 @@ footer
     color: #999
   text-align: right
   padding: 20px 0
+
+#methods
+  section, article
+    padding-top: 50px
+    margin-top: -30px
+    h2, h3
+      margin: 0
+  .synopsis
+    .arguments
+      font-size: 80%
+      font-weight: normal
+      color: #999
+  .source
+    .collapse
+      overflow: auto
+    .source-toggle
+      margin-bottom: 10px
+      .hide, &.collapsed .show
+        display: inline
+      .show, &.collapsed .hide
+        display: none
+      
+h1.name
+  .type
+    font-size: 80%
+    font-weight: normal
+    color: #999
+
+#class-list
+  .type
+    font-size: 15px
+    color: #999
+  a
+    font-weight: bold
+    font-size: 18px
+

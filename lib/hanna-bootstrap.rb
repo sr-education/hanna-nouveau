@@ -10,14 +10,16 @@
 #   Tony Strauss (http://github.com/DesigningPatterns)
 #   Michael Granger <ged@FaerieMUD.org>, who had maintained the original RDoc template
 
-require 'pathname'
-require 'haml'
-require 'sass'
-require 'rdoc/rdoc'
-require 'rdoc/generator'
+require 'coderay'
+require 'coderay/helpers/file_type'
 require 'coffee-script'
-require 'json'
+require 'haml'
 require 'hanna-bootstrap/version'
+require 'json'
+require 'pathname'
+require 'rdoc/generator'
+require 'rdoc/rdoc'
+require 'sass'
 
 class RDoc::Generator::Bootstrap
 
@@ -51,8 +53,7 @@ class RDoc::Generator::Bootstrap
 
   def initialize( options )
     @options = options
-
-    @templatedir = Pathname.new File.expand_path('../hanna-bootstrap/template_files', __FILE__)
+    @templatedir = Pathname.new(options.template_dir || File.expand_path('../hanna-bootstrap/template_files', __FILE__))
 
     @files      = nil
     @classes    = nil
@@ -64,16 +65,17 @@ class RDoc::Generator::Bootstrap
 
   def default_values( path )
     {
-      stylesheets: [
-        outpath(File.join('css', 'bootstrap.min.css'  ), path),
-        outpath(File.join('css', 'application.css'    ), path)
-      ],
-      javascripts: [
-        outpath(File.join('js',  'jquery.js'          ), path),
-        outpath(File.join('js',  'bootstrap.min.js'   ), path),
-        outpath(File.join('js',  'index.js'           ), path),
-        outpath(File.join('js',  'application.js'     ), path)
-      ],
+      stylesheets: %w{
+        bootstrap.min
+        application
+        coderay
+      }.map {|f|outpath(File.join('css', "#{f}.css"), path)},
+      javascripts: %w{
+        jquery
+        bootstrap.min
+        index
+        application
+      }.map {|f|outpath(File.join('js', "#{f}.js"), path)},
       mainpage:   outpath('', path),
       files:      @files,
       classes:    @classes,
@@ -138,6 +140,7 @@ class RDoc::Generator::Bootstrap
 
     FileUtils.cp %w{
       bootstrap.min.css
+      coderay.css
     }.map{|f| templjoin f }, css_dir
 
   end
@@ -363,5 +366,35 @@ class RDoc::Generator::Bootstrap
 
   def haml_file(file)
     Haml::Engine.new(File.read(file))
+  end
+
+  def highlighted_code_block(method)
+    lang = CodeRay::FileType.fetch(method.file.name, :text, true)
+    src = method.token_stream.map(&:text).join
+
+    # from RDoc::Generator::Markup#markup_code
+    indent = src.length
+    lines = src.lines.to_a
+    start = 0
+    if src =~ /\A.*#\ *File/i # remove '# File' comment
+      line = lines.shift
+      line.sub!(/\A(.*)(, line (\d+))/, '\1')
+      start = $3.to_i
+    end
+    lines.each do |line|
+      if line =~ /^ *(?=\S)/
+        n = $&.length
+        indent = n if n < indent
+        break if n == 0
+      end
+    end
+    src = lines.join
+    src.gsub!(/^#{' ' * indent}/, '') if indent > 0
+
+    CodeRay.highlight(src, lang,
+      :line_numbers        => @options.line_numbers ? :table : nil,
+      :line_number_anchors => "#{method.aref}-source-",
+      :line_number_start   => start
+      )
   end
 end

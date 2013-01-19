@@ -13,5 +13,6 @@ RDoc::Task.new do |rdoc|
   rdoc.main       = "README.rdoc"
   rdoc.rdoc_dir   = 'doc'
   rdoc.title      = 'hanna-bootstrap'
+  rdoc.options   << '--line-numbers'
 
 end

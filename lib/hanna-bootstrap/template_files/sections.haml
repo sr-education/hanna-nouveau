@@ -1,9 +1,15 @@
 - unless values[:entry].classes_and_modules.empty?
   #class-list
     %h2 Classes and Modules
-    %ol
-      - (values[:entry].modules.sort + values[:entry].classes.sort).each do |mod|
-        %li= link_to mod.full_name, values[:entry].aref_to(mod.path)
+    %ul
+      - values[:entry].modules.sort.each do |mod|
+        %li
+          %span.type MODULE
+          = link_to mod.full_name, values[:entry].aref_to(mod.path)
+      - values[:entry].classes.sort.each do |mod|
+        %li
+          %span.type CLASS
+          = link_to mod.full_name, values[:entry].aref_to(mod.path)
 
 - values[:sections].sort_by{|s, h| s.title.to_s}.each do |section, h|
   - constants, attributes, alias_types, method_types = h.values_at(:constants, :attributes, :alias_types, :method_types)
@@ -18,10 +24,10 @@
       #constants-list
         %h2 Constants
         .name-list
-          %table{ :summary => "Constants" }
+          %table.table-striped.table{ :summary => "Constants" }
             - constants.each do |const|
               %tr.top-aligned-row.context-row
-                %td.context-item-name= const.name
+                %th.context-item-name= const.name
                 %td =
                 %td.context-item-value= const.value
                 - if const.description then
@@ -58,31 +64,39 @@
       #methods
         - method_types.each do |type, list|
           - unless list.empty?
-            %h2== #{type} methods
+            %article{ id: "#{type.downcase}-methods" }
+              %h2== #{type} methods
 
-            - list.each do |method|
-              .method{ :id => "method-#{method.aref}", :class => "#{type.gsub(/\s+/, '-')}".downcase }
+              - list.each do |method|
                 %a{ :name => method.aref }
-                .synopsis
-                  - method_html = capture_haml do
-                    - if method.call_seq
-                      %span.name
-                        - method.call_seq.split(/\r?\n/).each do |seq|
-                          %div=seq
-                    - else
-                      %span.name= method.name
-                      %span.arguments= method.params
-                  -#- if method[:codeurl]
-                    -#%a.method-signature{ :href => method[:codeurl], :onclick => "popupCode(this.href); return false", :target => "Code" }
-                      -#= method_html
-                  -#- else
-                  = method_html
-                - if method.description
-                  .description
-                    ~ sanitize_code_blocks method.description
-                - if method.markup_code
-                  .source
-                    - name = "#{method.aref}-source"
-                    %a.source-toggle{ :href => "#", :onclick => "toggleCode('#{name}'); return false" }
-                      [show source]
-                    ~ "<pre id='#{name}'>#{method.markup_code}</pre>"
+                %section.method{ :id => "method-#{method.aref}", :class => "#{type.gsub(/\s+/, '-')}".downcase }
+                  %h3.synopsis
+                    - method_html = capture_haml do
+                      - if method.call_seq
+                        %span.name
+                          - method.call_seq.split(/\r?\n/).each do |seq|
+                            %div=seq
+                      - else
+                        %span.name= method.name
+                        %span.arguments= method.params
+                    -#- if method[:codeurl]
+                      -#%a.method-signature{ :href => method[:codeurl], :onclick => "popupCode(this.href); return false", :target => "Code" }
+                        -#= method_html
+                    -#- else
+                    = method_html
+                  - if method.description
+                    .description
+                      ~ sanitize_code_blocks method.description
+                  - if method.markup_code
+                    .source
+                      - name = "#{method.aref}-source"
+                      %a.btn.btn-mini.source-toggle.collapsed{ href: "##{name}", data: { toggle: 'collapse' } }
+                        %span.show
+                          %span.icon-resize-full
+                          Show
+                        %span.hide
+                          %span.icon-resize-small
+                          Hide
+                        Source
+                      %div.collapse{ id: name }
+                        = highlighted_code_block method
