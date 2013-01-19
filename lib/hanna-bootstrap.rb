@@ -376,10 +376,10 @@ class RDoc::Generator::Bootstrap
     indent = src.length
     lines = src.lines.to_a
     start = 0
-    line_numbers = @options.line_numbers
+    line_numbers = false
     if src =~ /\A.*#\ *File/i # remove '# File' comment
       line = lines.shift
-      line_numbers = false unless line.sub!(/\A(.*)(, line (\d+))/, '\1')
+      line_numbers = @options.line_numbers if line.sub!(/\A(.*)(, line (\d+))/, '\1')
       start = $3.to_i
     end
     lines.each do |line|
