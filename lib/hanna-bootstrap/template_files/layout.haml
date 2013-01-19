@@ -9,7 +9,7 @@
       %link{ :rel => "stylesheet", :href => f, :type => "text/css", :media => "screen" }
     - values[:javascripts].each do |f|
       %script{ :type => 'text/javascript', :src => f }
-        
+
   %body{ :class => values[:classmod] ? 'class' : 'file' }
     .navbar.navbar-fixed-top
       .navbar-inner

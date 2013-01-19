@@ -9,11 +9,11 @@
   - constants, attributes, alias_types, method_types = h.values_at(:constants, :attributes, :alias_types, :method_types)
   #section
     - if section.title.to_s != ''
-      %h2 
+      %h2
         %a{ :name =>section.aref }= section.title
         - if section.comment
           .section-comment= section.description
-        
+
     - unless constants.empty?
       #constants-list
         %h2 Constants
@@ -27,7 +27,7 @@
                 - if const.description then
                   %td &nbsp;
                   %td.context-item-desc= const.description
-                    
+
     - unless alias_types.empty?
       - alias_types.each do |type, aliases|
         #aliases-list
@@ -41,7 +41,7 @@
                   %td.context-item-value= link_to alia.is_alias_for.name, "##{alia.is_alias_for.aref}"
                   - unless alia.description.empty?
                     %td.context-item-desc= alia.description
-                    
+
     - unless attributes.empty?
       #attribute-list
         %h2.section-bar Attributes
@@ -53,13 +53,13 @@
                   %a{:name => attrib.aref}=attrib.name
                 %td.context-item-value= attrib.rw ? "[#{attrib.rw}]" : '&nbsp;'
                 %td.context-item-desc~ sanitize_code_blocks(attrib.description)
-    
+
     - unless method_types.empty?
       #methods
         - method_types.each do |type, list|
           - unless list.empty?
             %h2== #{type} methods
-            
+
             - list.each do |method|
               .method{ :id => "method-#{method.aref}", :class => "#{type.gsub(/\s+/, '-')}".downcase }
                 %a{ :name => method.aref }
