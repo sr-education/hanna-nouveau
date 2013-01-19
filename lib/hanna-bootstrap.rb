@@ -376,9 +376,10 @@ class RDoc::Generator::Bootstrap
     indent = src.length
     lines = src.lines.to_a
     start = 0
+    line_numbers = @options.line_numbers
     if src =~ /\A.*#\ *File/i # remove '# File' comment
       line = lines.shift
-      line.sub!(/\A(.*)(, line (\d+))/, '\1')
+      line_numbers = false unless line.sub!(/\A(.*)(, line (\d+))/, '\1')
       start = $3.to_i
     end
     lines.each do |line|
@@ -392,7 +393,7 @@ class RDoc::Generator::Bootstrap
     src.gsub!(/^#{' ' * indent}/, '') if indent > 0
 
     CodeRay.highlight(src, lang,
-      :line_numbers        => @options.line_numbers ? :table : nil,
+      :line_numbers        => line_numbers ? :table : nil,
       :line_number_anchors => "#{method.aref}-source-",
       :line_number_start   => start
       )
