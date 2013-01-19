@@ -1,7 +1,13 @@
 PATH
   remote: .
   specs:
-    hanna-bootstrap (0.0.1)
+    hanna-bootstrap (0.0.2)
+      bundler
+      coffee-script
+      haml
+      json
+      rake
+      sass
 
 GEM
   remote: http://rubygems.org/
@@ -22,10 +28,4 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  bundler
-  coffee-script
-  haml
   hanna-bootstrap!
-  json
-  rake
-  sass

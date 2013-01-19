@@ -17,10 +17,9 @@ require 'rdoc/rdoc'
 require 'rdoc/generator'
 require 'coffee-script'
 require 'json'
+require 'hanna-bootstrap/version'
 
 class RDoc::Generator::Bootstrap
-
-  VERSION = '0.0.1'
 
   LAYOUT           = 'layout.haml'
 
@@ -96,7 +95,7 @@ class RDoc::Generator::Bootstrap
 
     # Now actually write the output
     write_static_files
-    
+
     generate_class_files
     generate_file_files
     generate_indexes
@@ -162,7 +161,7 @@ class RDoc::Generator::Bootstrap
 
     index = haml_file(templjoin(templfile))
 
-    File.open(path, 'w') do |f| 
+    File.open(path, 'w') do |f|
       f << with_layout(values) do
         index.to_html(binding, values)
       end
@@ -183,18 +182,18 @@ class RDoc::Generator::Bootstrap
     method_list_page = haml_file(templjoin(METHOD_LIST_PAGE))
 
     path = Pathname.new(path || file.path)
-    values = default_values(path).merge({ 
-      :file => file, 
+    values = default_values(path).merge({
+      :file => file,
       :entry => file,
-      :classmod => nil, 
-      :title => file.base_name, 
+      :classmod => nil,
+      :title => file.base_name,
       :list_title => nil,
       :description => file.description
     })
 
-    result = with_layout(values) do 
-      file_page.to_html(binding, :values => values) do 
-        method_list_page.to_html(binding, values) 
+    result = with_layout(values) do
+      file_page.to_html(binding, :values => values) do
+        method_list_page.to_html(binding, values)
       end
     end
 
@@ -232,8 +231,8 @@ class RDoc::Generator::Bootstrap
 
       path = Pathname.new(klass.path)
 
-      values = default_values(path).merge({ 
-        :file => klass.path, 
+      values = default_values(path).merge({
+        :file => klass.path,
         :entry => klass,
         :classmod => klass.type,
         :title => klass.full_name,
@@ -242,9 +241,9 @@ class RDoc::Generator::Bootstrap
         :sections => sections
       })
 
-      result = with_layout(values) do 
+      result = with_layout(values) do
         h = {:values => values}
-        class_page.to_html(binding, h) do 
+        class_page.to_html(binding, h) do
           method_list_page.to_html(binding, h) + sections_page.to_html(binding, h)
         end
       end
@@ -312,7 +311,7 @@ class RDoc::Generator::Bootstrap
       out
     end
   end
-    
+
   def build_javascript_search_index(entries)
     'var searchIndex = ' + (entries.map { |entry|
       method_name = entry.name
@@ -365,4 +364,4 @@ class RDoc::Generator::Bootstrap
   def haml_file(file)
     Haml::Engine.new(File.read(file))
   end
-end 
+end

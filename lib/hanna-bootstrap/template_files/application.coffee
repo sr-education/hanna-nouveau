@@ -3,7 +3,7 @@ do(window, $) -> $ ->
   resultList  = $ '#search-results'
   searchIndex = window.searchIndex
   input       = $ '#search-query'
-  base        = $("script[src$='index.js']").attr('src').replace(/^([^j]+)js.*/, (a, b) -> b)
+  base        = $("script[src$='index.js']").attr('src').replace(/^([^j]*)js.*/, (a, b) -> b)
 
   search = ->
     val = input.val()
@@ -42,4 +42,4 @@ do(window, $) -> $ ->
   $('navbar-search').bind('submit', -> false)
 
 
-      
+
