@@ -13,7 +13,7 @@ require 'jeweler'
 Jeweler::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
   gem.name = "hanna-nouveau"
-  gem.homepage = "http://github.com/erikh/hanna-nouveau"
+  gem.homepage = "https://github.com/rdoc/hanna-nouveau"
   gem.license = "MIT"
   gem.summary = %Q{A rework of the Hanna generator for RDoc 2.5 and 3.x}
   gem.description = %Q{}
