@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = "hanna-nouveau"
-  s.version = "0.2.5"
+  s.version = "0.2.6"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Erik Hollensbe", "James Tucker", "Mislav Marohnic"]
@@ -38,7 +38,7 @@ Gem::Specification.new do |s|
     "lib/hanna-nouveau/template_files/styles.sass",
     "lib/rdoc/discover.rb"
   ]
-  s.homepage = "http://github.com/erikh/hanna-nouveau"
+  s.homepage = "https://github.com/rdoc/hanna-nouveau"
   s.licenses = ["MIT"]
   s.require_paths = ["lib"]
   s.rubygems_version = "1.8.25"
