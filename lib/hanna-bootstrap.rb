@@ -51,8 +51,9 @@ class RDoc::Generator::Bootstrap
     new( options )
   end
 
-  def initialize( options )
-    @options = options
+  def initialize( store, options )
+    @options     = options
+    @store       = store
     @templatedir = Pathname.new(options.template_dir || File.expand_path('../hanna-bootstrap/template_files', __FILE__))
 
     @files      = nil
@@ -87,12 +88,12 @@ class RDoc::Generator::Bootstrap
 
   end
 
-  def generate( top_levels )
+  def generate
     @outputdir = Pathname.new( @options.op_dir ).expand_path( @basedir )
 
-    @files      = top_levels.sort
-    @classes    = RDoc::TopLevel.all_classes_and_modules.sort
-    @methods    = @classes.map(&:method_list).flatten.sort
+    @files      = @store.all_files.sort
+    @classes    = @store.all_classes_and_modules.sort
+    @methods    = @classes.map {|m| m.method_list }.flatten.sort
     @attributes = @classes.map(&:attributes).flatten.sort
 
     # Now actually write the output
