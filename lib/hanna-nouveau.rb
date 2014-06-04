@@ -49,8 +49,9 @@ class RDoc::Generator::Hanna
     new( options )
   end
 
-  def initialize( options )
+  def initialize( store, options )
     @options = options
+    @store = store
 
     @templatedir = Pathname.new File.expand_path('../hanna-nouveau/template_files', __FILE__)
 
@@ -62,12 +63,12 @@ class RDoc::Generator::Hanna
     @basedir = Pathname.pwd.expand_path
   end
 
-  def generate( top_levels )
+  def generate
     @outputdir = Pathname.new( @options.op_dir ).expand_path( @basedir )
 
-    @files      = top_levels.sort
-    @classes    = RDoc::TopLevel.all_classes_and_modules.sort
-    @methods    = @classes.map(&:method_list).flatten.sort
+    @files      = @store.all_files.sort
+    @classes    = @store.all_classes_and_modules.sort
+    @methods    = @classes.map {|m| m.method_list }.flatten.sort
     @attributes = @classes.map(&:attributes).flatten.sort
 
     # Now actually write the output
