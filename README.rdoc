@@ -1,4 +1,4 @@
-= Hanna Nouveau — a better RDoc template, now for RDoc 2.5 and 3.0.
+= Hanna Nouveau — a better RDoc template, now for RDoc 4.
 
 Based on the original Hanna by Mislav.
 
