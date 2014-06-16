@@ -26,11 +26,14 @@
         %li
           %a.show{ :href => '#', :onclick => 'this.parentNode.parentNode.className += " expanded"; this.parentNode.removeChild(this); return false' } show all
           
-  - if values[:entry].parent 
+  - if !file_page && values[:entry].type == "class"
     .parent
-      Parent:
-      -# FIXME helper method
-      %strong= link_to values[:entry].parent.name, Pathname.new(class_dir) + Pathname.new(values[:entry].parent.path).relative_path_from(Pathname.new values[:entry].path)
+      Superclass:
+      - if values[:entry].superclass.kind_of?(String)
+        %strong= values[:entry].superclass
+      - else
+        %strong= link_to values[:entry].superclass.name, Pathname.new(class_dir) + Pathname.new(values[:entry].superclass.path).relative_path_from(Pathname.new values[:entry].path)
+
 
   - if values[:entry].respond_to?(:last_modified) and values[:entry].last_modified
     .last-update
