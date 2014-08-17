@@ -17,6 +17,24 @@ require 'sass'
 require 'rdoc/rdoc'
 require 'rdoc/generator'
 
+begin
+  require 'parser/current'
+
+  class RDoc::Markup::ToHtml
+    def parseable? text
+      parser = Parser::CurrentRuby.new
+      parser.diagnostics.consumer = lambda{|d|}
+      buffer = Parser::Source::Buffer.new('(string)')
+      buffer.source = text
+      parser.parse(buffer)
+      true
+    rescue
+      false
+    end
+  end
+rescue LoadError
+end
+
 class RDoc::Generator::Hanna 
   STYLE            = 'styles.sass'
   LAYOUT           = 'layout.haml'
