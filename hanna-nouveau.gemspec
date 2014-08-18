@@ -34,5 +34,6 @@ Gem::Specification.new do |s|
 
   s.add_dependency('haml', ["= 3.0.25"])
   s.add_dependency('rdoc', ["~> 4.0"])
+  s.add_dependency('parser', ["~> 2.0"])
 end
 

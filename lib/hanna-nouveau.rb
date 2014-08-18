@@ -16,24 +16,7 @@ require 'haml'
 require 'sass'
 require 'rdoc/rdoc'
 require 'rdoc/generator'
-
-begin
-  require 'parser/current'
-
-  class RDoc::Markup::ToHtml
-    def parseable? text
-      parser = Parser::CurrentRuby.new
-      parser.diagnostics.consumer = lambda{|d|}
-      buffer = Parser::Source::Buffer.new('(string)')
-      buffer.source = text
-      parser.parse(buffer)
-      true
-    rescue
-      false
-    end
-  end
-rescue LoadError
-end
+require 'parser/current'
 
 class RDoc::Markup::ToHtml
   LIST_TYPE_TO_HTML[:LABEL] = ['<table class="rdoc-list label-list"><tbody>', '</tbody></table>']
@@ -59,6 +42,17 @@ class RDoc::Markup::ToHtml
     else
       raise RDoc::Error, "Invalid list type: #{list_type.inspect}"
     end
+  end
+
+  def parseable? text
+    parser = Parser::CurrentRuby.new
+    parser.diagnostics.consumer = lambda{|d|}
+    buffer = Parser::Source::Buffer.new('(string)')
+    buffer.source = text
+    parser.parse(buffer)
+    true
+  rescue
+    false
   end
 end
 
