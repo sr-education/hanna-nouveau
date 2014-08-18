@@ -35,6 +35,33 @@ begin
 rescue LoadError
 end
 
+class RDoc::Markup::ToHtml
+  LIST_TYPE_TO_HTML[:LABEL] = ['<table class="rdoc-list label-list"><tbody>', '</tbody></table>']
+  LIST_TYPE_TO_HTML[:NOTE]  = ['<table class="rdoc-list note-list"><tbody>',  '</tbody></table>']
+
+  def list_item_start(list_item, list_type)
+    case list_type
+    when :BULLET, :LALPHA, :NUMBER, :UALPHA then
+      "<li>"
+    when :LABEL, :NOTE then
+      "<tr><td class='label'>#{Array(list_item.label).map{|label| to_html(label)}.join("<br />")}</td><td>"
+    else
+      raise RDoc::Error, "Invalid list type: #{list_type.inspect}"
+    end
+  end
+
+  def list_end_for(list_type)
+    case list_type
+    when :BULLET, :LALPHA, :NUMBER, :UALPHA then
+      "</li>"
+    when :LABEL, :NOTE then
+      "</td></tr>"
+    else
+      raise RDoc::Error, "Invalid list type: #{list_type.inspect}"
+    end
+  end
+end
+
 class RDoc::Generator::Hanna 
   STYLE            = 'styles.sass'
   LAYOUT           = 'layout.haml'
