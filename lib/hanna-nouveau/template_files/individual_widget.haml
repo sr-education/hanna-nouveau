@@ -1,9 +1,8 @@
-- unless values[:entry].classes_and_modules.empty?
-  #class-list
-    %h2 Classes and Modules
-    %ol
-      - (values[:entry].modules.sort + values[:entry].classes.sort).each do |mod|
-        %li= link_to mod.full_name, values[:entry].aref_to(mod.path)
+%h1.name{id: values[:entry].full_name.downcase.gsub('::', '_')}
+  = values[:entry].full_name.gsub('Hydragem::Widget::', '')
+
+- if values[:description]
+  #description~ sanitize_code_blocks frame_link values[:description]
 
 - values[:sections].sort_by{|s, h| s.title.to_s}.each do |section, h|
   - constants, attributes, alias_types, method_types = h.values_at(:constants, :attributes, :alias_types, :method_types)

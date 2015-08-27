@@ -3,7 +3,7 @@
 - methods = entry.method_list + entry.attributes
 - unless methods.empty?
   #method-list
-    %h2 Methods
+    %h2 Attributes
     - %w[attr attr_accessor attr_reader attr_writer class instance].each do |type|
       - (RDoc::VISIBILITIES rescue RDoc::Context::VISIBILITIES).each do |vis|
         -# FIXME ugly
@@ -15,7 +15,7 @@
           - else
             - type_result += type.capitalize
           - type_result = "#{vis.to_s.capitalize} #{type_result}"
-          %h3= type_result
+          %h3 Table of Contents
           %ol
             - list.each do |method|
               - if method.respond_to?(:aref)

@@ -62,20 +62,23 @@ class RDoc::Generator::Hanna
 
   INDEX_PAGE       = 'index.haml'
   CLASS_PAGE       = 'page.haml'
+  WIDGET_PAGE      = 'page_index.haml'
   METHOD_LIST_PAGE = 'method_list.haml'
   FILE_PAGE        = CLASS_PAGE
   SECTIONS_PAGE    = 'sections.haml'
+  IND_WIDGET_PAGE  = 'individual_widget.haml'
 
   FILE_INDEX       = 'file_index.haml'
-  CLASS_INDEX      = 'class_index.haml'
+  CLASS_INDEX      = 'widget_index.haml'
   METHOD_INDEX     = 'method_index.haml'
 
-  CLASS_DIR        = 'classes'
+  CLASS_DIR        = 'widgets'
   FILE_DIR         = 'files'
 
   INDEX_OUT        = 'index.html'
+  INDEX_GENERAL_OUT = 'index_general.html'
   FILE_INDEX_OUT   = 'fr_file_index.html'
-  CLASS_INDEX_OUT  = 'fr_class_index.html'
+  CLASS_INDEX_OUT  = 'widget_index.html'
   METHOD_INDEX_OUT = 'fr_method_index.html'
   STYLE_OUT        = File.join('css', 'style.css')
 
@@ -136,9 +139,9 @@ class RDoc::Generator::Hanna
     @main_page_uri = @files.find { |f| f.name == @options.main_page }.path rescue ''
     File.open(outjoin(INDEX_OUT), 'w') { |f| f << haml_file(templjoin(INDEX_PAGE)).to_html(binding) }
 
-    generate_index(FILE_INDEX_OUT,   FILE_INDEX,   'File',   { :files => @files})
-    generate_index(CLASS_INDEX_OUT,  CLASS_INDEX,  'Class',  { :classes => @classes })
-    generate_index(METHOD_INDEX_OUT, METHOD_INDEX, 'Method', { :methods => @methods, :attributes => @attributes })
+    # generate_index(FILE_INDEX_OUT,   FILE_INDEX,   'File',   { :files => @files})
+    generate_index(CLASS_INDEX_OUT,  CLASS_INDEX,  'Widget',  { :classes => @classes })
+    # generate_index(METHOD_INDEX_OUT, METHOD_INDEX, 'Method', { :methods => @methods, :attributes => @attributes })
   end
 
   def generate_index(outfile, templfile, index_name, values)
@@ -195,8 +198,11 @@ class RDoc::Generator::Hanna
     class_page       = haml_file(templjoin(CLASS_PAGE))
     method_list_page = haml_file(templjoin(METHOD_LIST_PAGE))
     sections_page    = haml_file(templjoin(SECTIONS_PAGE))
+    widget_page      = haml_file(templjoin(WIDGET_PAGE))
+    individual_widget = haml_file(templjoin(IND_WIDGET_PAGE))
     # FIXME refactor
 
+    general_index_result = ''
     @classes.each do |klass|
       outfile = classfile(klass)
       stylesheet = Pathname.new(STYLE_OUT).relative_path_from(outfile.dirname)
@@ -239,6 +245,14 @@ class RDoc::Generator::Hanna
       end
 
       File.open(outfile, 'w') { |f| f << result }
+      general_index_result << individual_widget.to_html(binding, :values => values) unless values[:entry].full_name == 'Hydragem' || values[:entry].full_name == 'Hydragem::Widget'
+    end
+    File.open(INDEX_GENERAL_OUT, 'a+') do |f| 
+      f << with_layout({}) do
+        widget_page.to_html(binding, values: {}) do
+          general_index_result
+        end
+      end
     end
   end
 
@@ -260,6 +274,7 @@ class RDoc::Generator::Hanna
   # probably should bring in nokogiri/libxml2 to do this right.. not sure if
   # it's worth it.
   def frame_link(content)
+    content.gsub!(/(href=[^(a-z)(A-Z)]*)([a-zA-Z\._]*)(#[A-Z_]*)/i, '\1\3')
     content.gsub(%r!<a href="http://[^>]*>!).each do |tag|
       a_tag, rest = tag.split(' ', 2)
       rest.gsub!(/target="[^"]*"/, '')
@@ -285,22 +300,23 @@ class RDoc::Generator::Hanna
 
     entries.sort.inject('') do |out, klass|
       unless namespaces[klass.full_name]
-        if parent
-          text = '<span class="parent">%s::</span>%s' % [parent.full_name, klass.name]
+        if parent && parent.full_name != 'Hydragem::Widget' && parent.full_name != 'Hydragem'
+          text = '<span class="parent">%s::</span>%s' % [parent.full_name.to_s.gsub(/Hydragem::Widget(::)?/, ''), klass.name]
         else
           text = klass.name
         end
 
-        if klass.document_self
+        if klass.document_self && !['Hydragem', 'Hydragem::Widget'].include?(klass.full_name.to_s)
           out << '<li>'
-          out << link_to(text, classfile(klass))
+          out << link_to(text, classfile(klass).to_s.downcase.gsub(/\.html$/, ''))
         end
+
 
         subentries = @classes.select { |x| x.full_name[/^#{klass.full_name}::/] }
         subentries.each { |x| namespaces[x.full_name] = true }
         out << "\n<ol>" + render_class_tree(subentries, klass) + "\n</ol>"
 
-        if klass.document_self
+        if klass.document_self && !['Hydragem', 'Hydragem::Widget'].include?(klass.full_name.to_s)
           out << '</li>'
         end
       end
@@ -345,7 +361,7 @@ class RDoc::Generator::Hanna
 
   def classfile(klass)
     # FIXME sloooooooow
-    Pathname.new(File.join(CLASS_DIR, klass.full_name.split('::')) + '.html')
+    Pathname.new(File.join(CLASS_DIR, klass.full_name.split('::')).downcase + '.html')
   end
 
   def outjoin(name)
